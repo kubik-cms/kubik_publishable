@@ -1,0 +1,33 @@
+<% report_column = KubikPublishable.config.html_quality_report_column %>
+<% report = resource.public_send(report_column).presence || {} %>
+<% findings = report["findings"] || report[:findings] || [] %>
+<% checked_at = report["checked_at"] || report[:checked_at] %>
+
+<% if checked_at.present? %>
+  <p>Last checked: <%= Time.zone.parse(checked_at.to_s).to_fs(:long) %> — <%= (report.dig("summary", "warnings") || report.dig(:summary, :warnings) || findings.size) %> warning(s)</p>
+<% else %>
+  <p>No HTML quality report yet. Use “Run HTML check” to analyze the public page render.</p>
+<% end %>
+
+<% if findings.any? %>
+  <table class="index_table">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Severity</th>
+        <th>Line</th>
+        <th>Message</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% findings.each do |finding| %>
+        <tr>
+          <td><%= finding["code"] || finding[:code] %></td>
+          <td><%= finding["severity"] || finding[:severity] %></td>
+          <td><%= finding["line"] || finding[:line] %></td>
+          <td><%= finding["message"] || finding[:message] %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
