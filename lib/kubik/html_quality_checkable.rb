@@ -18,19 +18,12 @@ module Kubik
     end
 
     def enqueue_html_quality_check
-      KubikPublishable::HtmlQualityCheckJob.perform_later(self.class.name, id)
+      KubikPublishable::HtmlQualityCheckJob.perform_now(self.class.name, id)
     end
 
     def html_quality_checks_enabled_for_model?
-      if defined?(KubikSettings::ResourceResolver)
-        resource_key = KubikSettings::ResourceResolver.resource_key_for(self)
-        if resource_key && KubikSettings::ResourceResolver.registered?(resource_key)
-          definition = KubikSettings.configuration.resource_registry[resource_key.to_s]
-          if definition.setting_meta(:html_quality_enabled)
-            stored = KubikSettings::ResourceResolver.get_stored_or_fallback_only(resource_key, :html_quality_enabled)
-            return stored unless stored.nil?
-          end
-        end
+      if defined?(Kubik::Features) && Kubik::Features.respond_to?(:html_quality_enabled_for_model?)
+        return Kubik::Features.html_quality_enabled_for_model?(self)
       end
 
       KubikPublishable.config.html_quality_supported?(self.class.name)

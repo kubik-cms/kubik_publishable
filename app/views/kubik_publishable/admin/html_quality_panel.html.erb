@@ -1,0 +1,4 @@
+<%= turbo_frame_tag "kubik_offcanvas_frame" do %>
+  <%= render partial: "kubik_publishable/admin/html_quality_panel",
+             locals: { resource: resource, run_check_path: run_check_path } %>
+<% end %>

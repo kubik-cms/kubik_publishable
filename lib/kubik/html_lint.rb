@@ -27,24 +27,13 @@ module Kubik
           )
         end
 
-        lint_findings = rules.flat_map { |rule_class| rule_class.new(doc).call }
-
         {
           parse_findings: parse_findings,
-          lint_findings: lint_findings,
-          findings: parse_findings + lint_findings
+          lint_findings: [],
+          findings: parse_findings
         }
       end
     end
   end
 end
 
-require "kubik/html_lint/rules/missing_h1"
-require "kubik/html_lint/rules/multiple_h1"
-require "kubik/html_lint/rules/heading_level_skip"
-require "kubik/html_lint/rules/img_missing_alt"
-
-Kubik::HtmlLint.register(Kubik::HtmlLint::Rules::MissingH1)
-Kubik::HtmlLint.register(Kubik::HtmlLint::Rules::MultipleH1)
-Kubik::HtmlLint.register(Kubik::HtmlLint::Rules::HeadingLevelSkip)
-Kubik::HtmlLint.register(Kubik::HtmlLint::Rules::ImgMissingAlt)

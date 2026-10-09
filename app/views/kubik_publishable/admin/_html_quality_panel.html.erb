@@ -2,32 +2,49 @@
 <% report = resource.public_send(report_column).presence || {} %>
 <% findings = report["findings"] || report[:findings] || [] %>
 <% checked_at = report["checked_at"] || report[:checked_at] %>
+<% run_check_path = local_assigns[:run_check_path] %>
 
-<% if checked_at.present? %>
-  <p>Last checked: <%= Time.zone.parse(checked_at.to_s).to_fs(:long) %> — <%= (report.dig("summary", "warnings") || report.dig(:summary, :warnings) || findings.size) %> warning(s)</p>
-<% else %>
-  <p>No HTML quality report yet. Use “Run HTML check” to analyze the public page render.</p>
-<% end %>
+<div class="kubik-html-quality-panel offcanvas_info_panel">
+  <% if checked_at.present? %>
+    <p class="kubik-html-quality-panel__meta">
+      Last checked: <%= Time.zone.parse(checked_at.to_s).to_fs(:long) %>
+    </p>
+  <% else %>
+    <p class="kubik-html-quality-panel__meta">No HTML quality report yet. Save the record or run a check below.</p>
+  <% end %>
 
-<% if findings.any? %>
-  <table class="index_table">
-    <thead>
-      <tr>
-        <th>Code</th>
-        <th>Severity</th>
-        <th>Line</th>
-        <th>Message</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% findings.each do |finding| %>
+  <% if findings.empty? && checked_at.present? %>
+    <p class="kubik-reporting-detail__ok">No HTML validity issues detected.</p>
+  <% elsif findings.any? %>
+    <table class="index_table">
+      <thead>
         <tr>
-          <td><%= finding["code"] || finding[:code] %></td>
-          <td><%= finding["severity"] || finding[:severity] %></td>
-          <td><%= finding["line"] || finding[:line] %></td>
-          <td><%= finding["message"] || finding[:message] %></td>
+          <th>Code</th>
+          <th>Severity</th>
+          <th>Line</th>
+          <th>Message</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% end %>
+      </thead>
+      <tbody>
+        <% findings.each do |finding| %>
+          <tr>
+            <td><%= finding["code"] || finding[:code] %></td>
+            <td><%= finding["severity"] || finding[:severity] %></td>
+            <td><%= finding["line"] || finding[:line] %></td>
+            <td><%= finding["message"] || finding[:message] %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+  <% if run_check_path.present? %>
+    <p class="kubik-html-quality-panel__actions">
+      <%= button_to "Run check again",
+                    run_check_path,
+                    method: :post,
+                    class: "button",
+                    form: { data: { turbo_frame: "kubik_offcanvas_frame" } } %>
+    </p>
+  <% end %>
+</div>

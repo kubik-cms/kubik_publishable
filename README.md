@@ -21,7 +21,7 @@ class Page < ApplicationRecord
 end
 ```
 
-Register admin publish actions via `Kubik::PublishableAdminAction`. HTML lint rules live under `Kubik::HtmlLint`.
+Register admin publish actions via `Kubik::PublishableAdminAction`. `Kubik::HtmlLint` reports HTML5 parse validity only (malformed markup). On-page SEO checks live in `kubik_metatagable` (`Kubik::Reporting::SeoReport`).
 
 ### HTML quality (optional)
 

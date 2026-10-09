@@ -10,7 +10,7 @@ module Kubik
 
       html = renderer.call(record)
       result = Kubik::HtmlLint.call(html)
-      findings = serialize_findings(result[:findings])
+      findings = serialize_findings(result[:parse_findings])
 
       {
         checked_at: Time.current.iso8601,
@@ -23,7 +23,7 @@ module Kubik
         findings: [
           {
             code: "render_failed",
-            severity: "warning",
+            severity: "error",
             line: nil,
             column: nil,
             message: e.message
